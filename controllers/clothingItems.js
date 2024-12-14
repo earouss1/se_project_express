@@ -55,7 +55,12 @@ const deleteItem = (req, res) => {
   console.log(itemId);
 
   ClothingItem.findByIdAndDelete(itemId)
-    .orFail()
+    .orFail(() => {
+      const error = new Error("Item ID not found");
+      error.statusCode = REQUEST_NOT_FOUND;
+      throw error;
+    })
+
     .then((item) => {
       console.log(item);
       res.status(200).send(item);
@@ -86,7 +91,11 @@ const updateItem = (req, res) => {
   console.log(itemId, imageUrl);
 
   ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } })
-    .orFail()
+    .orFail(() => {
+      const error = new Error("Item ID not found");
+      error.statusCode = REQUEST_NOT_FOUND;
+      throw error;
+    })
     .then((item) => {
       res.status(200).send({ data: item });
     })
@@ -118,7 +127,11 @@ const likeItem = (req, res) => {
     },
     { new: true }
   )
-    .orFail()
+    .orFail(() => {
+      const error = new Error("Item ID not found");
+      error.statusCode = REQUEST_NOT_FOUND;
+      throw error;
+    })
     .then((item) => {
       console.log(item);
       res.status(200).send({ data: item });
@@ -151,7 +164,11 @@ const dislikeItem = (req, res) => {
     },
     { new: true }
   )
-    .orFail()
+    .orFail(() => {
+      const error = new Error("Item ID not found");
+      error.statusCode = REQUEST_NOT_FOUND;
+      throw error;
+    })
     .then((item) => {
       console.log(item);
       res.status(200).send({ data: item });
