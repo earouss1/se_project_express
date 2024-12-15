@@ -38,7 +38,7 @@ const createItem = (req, res) => {
       console.error(error);
       if (error.name === "ValidationError") {
         return res.status(BAD_REQUEST_STATUS_CODE).send({
-          message: error.message,
+          message: BAD_REQUEST_STATUS_CODE.message,
         });
       }
       return res.status(DEFAULT_ERROR).send({
@@ -64,45 +64,15 @@ const deleteItem = (req, res) => {
     })
     .catch((error) => {
       console.error(error);
-      if (error.name === "DocumentNotFoundError") {
-        return res.status(REQUEST_NOT_FOUND).send({ message: error.message });
+      if (error.statusCode === REQUEST_NOT_FOUND) {
+        return res
+          .status(REQUEST_NOT_FOUND)
+          .send({ message: REQUEST_NOT_FOUND.message });
       }
       if (error.name === "ValidationError" || error.name === "CastError") {
         return res
           .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: error.message });
-      }
-      return res
-        .status(DEFAULT_ERROR)
-        .send({ message: "An error has occurred on the server." });
-    });
-};
-
-// PUT /items/:itemId — updates an item by _id
-
-const updateItem = (req, res) => {
-  const { itemId } = req.params;
-  const { imageUrl } = req.body;
-  console.log(itemId, imageUrl);
-
-  ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } })
-    .orFail(() => {
-      const error = new Error("Item ID not found");
-      error.statusCode = REQUEST_NOT_FOUND;
-      throw error;
-    })
-    .then((item) => {
-      res.status(200).send({ data: item });
-    })
-    .catch((error) => {
-      console.error(error);
-      if (error.name === "DocumentNotFoundError") {
-        return res.status(REQUEST_NOT_FOUND).send({ message: error.message });
-      }
-      if (error.name === "ValidationError" || error.name === "CastError") {
-        return res
-          .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: error.message });
+          .send({ message: BAD_REQUEST_STATUS_CODE.message });
       }
       return res
         .status(DEFAULT_ERROR)
@@ -131,13 +101,15 @@ const likeItem = (req, res) => {
     })
     .catch((error) => {
       console.error(error);
-      if (error.name === "DocumentNotFoundError") {
-        return res.status(REQUEST_NOT_FOUND).send({ message: error.message });
+      if (error.statusCode === REQUEST_NOT_FOUND) {
+        return res
+          .status(REQUEST_NOT_FOUND)
+          .send({ message: REQUEST_NOT_FOUND.message });
       }
       if (error.name === "ValidationError" || error.name === "CastError") {
         return res
           .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: error.message });
+          .send({ message: BAD_REQUEST_STATUS_CODE.message });
       }
       return res
         .status(DEFAULT_ERROR)
@@ -166,13 +138,15 @@ const dislikeItem = (req, res) => {
     })
     .catch((error) => {
       console.error(error);
-      if (error.name === "DocumentNotFoundError") {
-        return res.status(REQUEST_NOT_FOUND).send({ message: error.message });
+      if (error.statusCode === REQUEST_NOT_FOUND) {
+        return res
+          .status(REQUEST_NOT_FOUND)
+          .send({ message: REQUEST_NOT_FOUND.message });
       }
       if (error.name === "ValidationError" || error.name === "CastError") {
         return res
           .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: error.message });
+          .send({ message: BAD_REQUEST_STATUS_CODE.message });
       }
       return res
         .status(DEFAULT_ERROR)
@@ -184,7 +158,6 @@ module.exports = {
   getItems,
   createItem,
   deleteItem,
-  updateItem,
   likeItem,
   dislikeItem,
 };

@@ -13,7 +13,7 @@ const getUsers = (req, res) => {
     .catch((error) => {
       console.error(error);
       return res.status(DEFAULT_ERROR).send({
-        message: error.message,
+        message: "An error has occurred on the server",
       });
     });
 };
@@ -30,7 +30,7 @@ const createUser = (req, res) => {
       console.error(error);
       if (error.name === "ValidationError") {
         return res.status(BAD_REQUEST_STATUS_CODE).send({
-          message: error.message,
+          message: BAD_REQUEST_STATUS_CODE.message,
         });
       }
       return res.status(DEFAULT_ERROR).send({
@@ -52,14 +52,14 @@ const getUser = (req, res) => {
     .then((user) => res.status(200).send(user))
     .catch((error) => {
       console.error(error);
-      if (error.name === "DocumentNotFoundError") {
+      if (error.statusCode === REQUEST_NOT_FOUND) {
         return res.status(REQUEST_NOT_FOUND).send({
-          message: error.message,
+          message: REQUEST_NOT_FOUND.message,
         });
       }
       if (error.name === "CastError") {
         return res.status(BAD_REQUEST_STATUS_CODE).send({
-          message: error.message,
+          message: BAD_REQUEST_STATUS_CODE.message,
         });
       }
       return res.status(DEFAULT_ERROR).send({
