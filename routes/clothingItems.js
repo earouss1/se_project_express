@@ -14,7 +14,7 @@ router.post("/", createItem);
 // DELETE /items/:itemId — deletes an item by _id
 router.delete("/:itemId", deleteItem);
 // Like /items/:itemId - likes an item by _id
-router.put("/:itemId", likeItem);
+router.put("/:itemId/likes", likeItem);
 // dislikes /items/:itemId - dislikes an item by _id
-router.delete("/:itemId", dislikeItem);
+router.delete("/:itemId/likes", dislikeItem);
 module.exports = router;

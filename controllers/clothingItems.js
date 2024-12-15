@@ -38,7 +38,7 @@ const createItem = (req, res) => {
       console.error(error);
       if (error.name === "ValidationError") {
         return res.status(BAD_REQUEST_STATUS_CODE).send({
-          message: BAD_REQUEST_STATUS_CODE.message,
+          message: error.message,
         });
       }
       return res.status(DEFAULT_ERROR).send({
@@ -65,14 +65,12 @@ const deleteItem = (req, res) => {
     .catch((error) => {
       console.error(error);
       if (error.statusCode === REQUEST_NOT_FOUND) {
-        return res
-          .status(REQUEST_NOT_FOUND)
-          .send({ message: REQUEST_NOT_FOUND.message });
+        return res.status(REQUEST_NOT_FOUND).send({ message: error.message });
       }
       if (error.name === "ValidationError" || error.name === "CastError") {
         return res
           .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: BAD_REQUEST_STATUS_CODE.message });
+          .send({ message: error.message });
       }
       return res
         .status(DEFAULT_ERROR)
@@ -102,14 +100,12 @@ const likeItem = (req, res) => {
     .catch((error) => {
       console.error(error);
       if (error.statusCode === REQUEST_NOT_FOUND) {
-        return res
-          .status(REQUEST_NOT_FOUND)
-          .send({ message: REQUEST_NOT_FOUND.message });
+        return res.status(REQUEST_NOT_FOUND).send({ message: error.message });
       }
       if (error.name === "ValidationError" || error.name === "CastError") {
         return res
           .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: BAD_REQUEST_STATUS_CODE.message });
+          .send({ message: error.message });
       }
       return res
         .status(DEFAULT_ERROR)
@@ -139,14 +135,12 @@ const dislikeItem = (req, res) => {
     .catch((error) => {
       console.error(error);
       if (error.statusCode === REQUEST_NOT_FOUND) {
-        return res
-          .status(REQUEST_NOT_FOUND)
-          .send({ message: REQUEST_NOT_FOUND.message });
+        return res.status(REQUEST_NOT_FOUND).send({ message: error.message });
       }
       if (error.name === "ValidationError" || error.name === "CastError") {
         return res
           .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: BAD_REQUEST_STATUS_CODE.message });
+          .send({ message: error.message });
       }
       return res
         .status(DEFAULT_ERROR)
