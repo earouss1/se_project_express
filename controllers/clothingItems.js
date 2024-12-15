@@ -32,7 +32,6 @@ const createItem = (req, res) => {
 
   ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
     .then((item) => {
-      console.log(item);
       res.status(201).send(item);
     })
     .catch((error) => {
@@ -60,19 +59,15 @@ const deleteItem = (req, res) => {
       error.statusCode = REQUEST_NOT_FOUND;
       throw error;
     })
-
     .then((item) => {
-      console.log(item);
       res.status(200).send(item);
     })
     .catch((error) => {
       console.error(error);
-      if (err.name === "DocumentNotFoundError") {
+      if (error.name === "DocumentNotFoundError") {
         return res.status(REQUEST_NOT_FOUND).send({ message: error.message });
-      } else if (
-        error.name === "ValidationError" ||
-        error.name === "CastError"
-      ) {
+      }
+      if (error.name === "ValidationError" || error.name === "CastError") {
         return res
           .status(BAD_REQUEST_STATUS_CODE)
           .send({ message: error.message });
@@ -101,12 +96,10 @@ const updateItem = (req, res) => {
     })
     .catch((error) => {
       console.error(error);
-      if (err.name === "DocumentNotFoundError") {
+      if (error.name === "DocumentNotFoundError") {
         return res.status(REQUEST_NOT_FOUND).send({ message: error.message });
-      } else if (
-        error.name === "ValidationError" ||
-        error.name === "CastError"
-      ) {
+      }
+      if (error.name === "ValidationError" || error.name === "CastError") {
         return res
           .status(BAD_REQUEST_STATUS_CODE)
           .send({ message: error.message });
@@ -138,12 +131,10 @@ const likeItem = (req, res) => {
     })
     .catch((error) => {
       console.error(error);
-      if (err.name === "DocumentNotFoundError") {
+      if (error.name === "DocumentNotFoundError") {
         return res.status(REQUEST_NOT_FOUND).send({ message: error.message });
-      } else if (
-        error.name === "ValidationError" ||
-        error.name === "CastError"
-      ) {
+      }
+      if (error.name === "ValidationError" || error.name === "CastError") {
         return res
           .status(BAD_REQUEST_STATUS_CODE)
           .send({ message: error.message });
@@ -175,12 +166,10 @@ const dislikeItem = (req, res) => {
     })
     .catch((error) => {
       console.error(error);
-      if (err.name === "DocumentNotFoundError") {
+      if (error.name === "DocumentNotFoundError") {
         return res.status(REQUEST_NOT_FOUND).send({ message: error.message });
-      } else if (
-        error.name === "ValidationError" ||
-        error.name === "CastError"
-      ) {
+      }
+      if (error.name === "ValidationError" || error.name === "CastError") {
         return res
           .status(BAD_REQUEST_STATUS_CODE)
           .send({ message: error.message });

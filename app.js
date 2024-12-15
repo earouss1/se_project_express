@@ -9,12 +9,14 @@ app.use(express.json());
 
 app.use((req, res, next) => {
   req.user = {
-    _id: "",
+    _id: "675e4bc8db5b4fc727bde963",
   };
   next();
 });
 
 app.use("/", indexRouter);
+
+mongoose.set("strictQuery", false);
 
 mongoose
   .connect("mongodb://127.0.0.1:27017/wtwr_db")
