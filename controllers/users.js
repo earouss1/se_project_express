@@ -114,7 +114,7 @@ const updateUser = (req, res) => {
       if (error === "validatioError") {
         return res
           .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: message.error });
+          .send({ message: error.message });
       }
       if (error.statusCode === REQUEST_NOT_FOUND) {
         return res.status(REQUEST_NOT_FOUND).send({ message: error.message });

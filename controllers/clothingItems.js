@@ -10,7 +10,6 @@ const {
 // GET /items — returns all clothing items
 
 const getItems = (req, res) => {
-  console.log(req);
   ClothingItem.find({})
     .then((items) => {
       res.status(200).send(items);
@@ -49,7 +48,6 @@ const createItem = (req, res) => {
 
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
-  console.log(itemId);
 
   ClothingItem.findByIdAndDelete(itemId)
     .orFail(() => {
@@ -59,7 +57,9 @@ const deleteItem = (req, res) => {
     })
     .then((item) => {
       if (!item) {
-        return res.status(REQUEST_NOT_FOUND).send({ message: error.message });
+        return res
+          .status(REQUEST_NOT_FOUND)
+          .send({ message: "Item is not found" });
       }
       if (item.owner.equals(req.user._id)) {
         return clothingItem.findByIdAndDelete(itemId).then((deleteItem) => {
@@ -102,7 +102,6 @@ const likeItem = (req, res) => {
       throw error;
     })
     .then((item) => {
-      console.log(item);
       res.status(200).send({ data: item });
     })
     .catch((error) => {
@@ -137,7 +136,6 @@ const dislikeItem = (req, res) => {
       throw error;
     })
     .then((item) => {
-      console.log(item);
       res.status(200).send({ data: item });
     })
     .catch((error) => {

@@ -3,11 +3,11 @@ const { getCurrentUser, updateUser } = require("../controllers/users");
 const auth = require("../middlewares/auth");
 
 // Get user
-//router.get("/", getUsers);
+// router.get("/", getUsers);
 // Get user by Id
 router.get("/me", auth, getCurrentUser);
 // Create user
-//router.post("/", createUser);
+// router.post("/", createUser);
 // Upadte user
 router.patch("/me", auth, updateUser);
 
