@@ -1,4 +1,3 @@
-const clothingItem = require("../models/clothingItem");
 const ClothingItem = require("../models/clothingItem");
 const {
   BAD_REQUEST_STATUS_CODE,
@@ -62,8 +61,8 @@ const deleteItem = (req, res) => {
           .send({ message: "Item is not found" });
       }
       if (item.owner.equals(req.user._id)) {
-        return clothingItem.findByIdAndDelete(itemId).then((deleteItem) => {
-          res.status(200).send({ data: deleteItem });
+        return ClothingItem.findByIdAndDelete(itemId).then((dltItem) => {
+          res.status(200).send({ data: dltItem });
         });
       }
       return res
