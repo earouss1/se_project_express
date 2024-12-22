@@ -1,8 +1,10 @@
+const clothingItem = require("../models/clothingItem");
 const ClothingItem = require("../models/clothingItem");
 const {
   BAD_REQUEST_STATUS_CODE,
   DEFAULT_ERROR,
   REQUEST_NOT_FOUND,
+  BANNED_ERROR,
 } = require("../utils/errors");
 
 // GET /items — returns all clothing items
@@ -24,10 +26,6 @@ const getItems = (req, res) => {
 // POST /items — creates a new item
 
 const createItem = (req, res) => {
-  console.log(req);
-  console.log(req.body);
-  console.log(req.user._id);
-
   const { name, weather, imageUrl } = req.body;
 
   ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
@@ -60,7 +58,17 @@ const deleteItem = (req, res) => {
       throw error;
     })
     .then((item) => {
-      res.status(200).send(item);
+      if (!item) {
+        return res.status(REQUEST_NOT_FOUND).send({ message: error.message });
+      }
+      if (item.owner.equals(req.user._id)) {
+        return clothingItem.findByIdAndDelete(itemId).then((deleteItem) => {
+          res.status(200).send({ data: deleteItem });
+        });
+      }
+      return res
+        .status(BANNED_ERROR)
+        .send({ message: "You do not have access to delete this item" });
     })
     .catch((error) => {
       console.error(error);
