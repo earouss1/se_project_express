@@ -10,18 +10,6 @@ const {
   CLASH_ERROR,
 } = require("../utils/errors");
 
-// GET Users
-// const getUsers = (req, res) => {
-//   User.find({})
-//     .then((users) => res.status(200).send(users))
-//     .catch((error) => {
-//       console.error(error);
-//       return res.status(DEFAULT_ERROR).send({
-//         message: "An error has occurred on the server",
-//       });
-//     });
-// };
-
 // Create users
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
@@ -61,7 +49,7 @@ const createUser = (req, res) => {
 
 // Get user by user/me
 const getCurrentUser = (req, res) => {
-  const { userId } = req.user._id;
+  const userId = req.user._id;
   User.findById(userId)
     .orFail(() => {
       const error = new Error("User is not found");
@@ -89,7 +77,7 @@ const getCurrentUser = (req, res) => {
 
 // Update user: user/me
 const updateUser = (req, res) => {
-  const { userId } = req.user._id;
+  const userId = req.user._id;
   const { name, avatar, email, password } = req.body;
 
   User.findByIdAndUpdate(
@@ -111,7 +99,7 @@ const updateUser = (req, res) => {
       res.status(200).send(userMissingPassword);
     })
     .catch((error) => {
-      if (error === "validatioError") {
+      if (error === "ValidationError") {
         return res
           .status(BAD_REQUEST_STATUS_CODE)
           .send({ message: error.message });

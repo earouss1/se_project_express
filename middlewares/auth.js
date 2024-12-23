@@ -5,7 +5,7 @@ const { AUTHORIZATION_ERROR } = require("../utils/errors");
 const auth = (req, res, next) => {
   const { authorization } = req.headers;
 
-  if (!authorization || authorization.startsWith("Bearer ")) {
+  if (!authorization || !authorization.startsWith("Bearer ")) {
     return res.status(AUTHORIZATION_ERROR).send({ message: "Access denied" });
   }
   const token = authorization.replace("Bearer ", "");
