@@ -2,22 +2,25 @@ const bcrypt = require("bcryptjs"); // importing bcrypt
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const { JWT_SECRET } = require("../utils/config");
-const {
-  BAD_REQUEST_STATUS_CODE,
-  DEFAULT_ERROR,
-  REQUEST_NOT_FOUND,
-  AUTHORIZATION_ERROR,
-  CLASH_ERROR,
-} = require("../utils/errors");
+
+const BadRequestError = require("../errors/BadRequestError");
+const ConflictError = require("../errors/ConflictError");
+const UnauthorizedError = require("../errors/UnauthorizedError");
+const NotFoundError = require("../errors/NotFoundError");
+// const {
+//   BAD_REQUEST_STATUS_CODE,
+//   DEFAULT_ERROR,
+//   REQUEST_NOT_FOUND,
+//   AUTHORIZATION_ERROR,
+//   CLASH_ERROR,
+// } = require("../utils/errors");
 
 // Create users
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
   if (!email || !password) {
-    return res
-      .status(BAD_REQUEST_STATUS_CODE)
-      .send({ message: "An Email address and Password are required" });
+    return next(new BadRequestError("An email and a password are required"));
   }
   return bcrypt
     .hash(password, 12)
@@ -32,51 +35,46 @@ const createUser = (req, res) => {
     .catch((error) => {
       console.error("Error code:", error);
       if (error.code === 11000) {
-        return res.status(CLASH_ERROR).send({
-          message: "Choose a different email, this email is already existed",
-        });
+        return next(
+          new ConflictError(
+            "Choose a different email, this email is already existed"
+          )
+        );
+        // return res.status(CLASH_ERROR).send({
+        //   message: "Choose a different email, this email is already existed",
+        // });
       }
       if (error.name === "ValidationError") {
-        return res.status(BAD_REQUEST_STATUS_CODE).send({
-          message: error.message,
-        });
+        return next(new BadRequestError({ message: error.message }));
       }
-      return res.status(DEFAULT_ERROR).send({
-        message: "An error has occurred on the server",
-      });
+      return next(error);
     });
 };
 
 // Get user by user/me
-const getCurrentUser = (req, res) => {
+const getCurrentUser = (req, res, next) => {
   const userId = req.user._id;
   User.findById(userId)
     .orFail(() => {
       const error = new Error("User is not found");
-      error.statusCode = REQUEST_NOT_FOUND;
+      error.statusCode = NotFoundError;
       throw error;
     })
     .then((user) => res.status(200).send(user))
     .catch((error) => {
       console.error(error);
-      if (error.statusCode === REQUEST_NOT_FOUND) {
-        return res.status(REQUEST_NOT_FOUND).send({
-          message: error.message,
-        });
+      if (error.statusCode === NotFoundError) {
+        return next(new NotFoundError({ message: error.message }));
       }
       if (error.name === "CastError") {
-        return res.status(BAD_REQUEST_STATUS_CODE).send({
-          message: error.message,
-        });
+        return next(new BadRequestError({ message: error.message }));
       }
-      return res.status(DEFAULT_ERROR).send({
-        message: "An error has occurred on the server",
-      });
+      return next(error);
     });
 };
 
 // Update user: user/me
-const updateUser = (req, res) => {
+const updateUser = (req, res, next) => {
   const userId = req.user._id;
   const { name, avatar, email, password } = req.body;
 
@@ -90,7 +88,7 @@ const updateUser = (req, res) => {
   )
     .orFail(() => {
       const error = new Error("User is not found");
-      error.statusCode = REQUEST_NOT_FOUND;
+      error.statusCode = NotFoundError;
       throw error;
     })
     .then((user) => {
@@ -100,26 +98,26 @@ const updateUser = (req, res) => {
     })
     .catch((error) => {
       if (error === "ValidationError") {
-        return res
-          .status(BAD_REQUEST_STATUS_CODE)
-          .send({ message: error.message });
+        return next(new BadRequestError({ message: error.message }));
       }
-      if (error.statusCode === REQUEST_NOT_FOUND) {
-        return res.status(REQUEST_NOT_FOUND).send({ message: error.message });
+      if (error.statusCode === NotFoundError) {
+        return next(new NotFoundError("User is not found"));
       }
-      return res.status(DEFAULT_ERROR).send({
-        message: "An error has occurred on the server",
-      });
+      return next(error);
     });
 };
 
 // User login
-const userLogin = (req, res) => {
+const userLogin = (req, res, next) => {
   const { email, password } = req.body;
+
   if (!email || !password) {
-    return res
-      .status(BAD_REQUEST_STATUS_CODE)
-      .send({ message: "An Email address and Password are required" });
+    return next(
+      new BadRequestError("An Email address and Password are required")
+    );
+    // return res
+    //   .status(BAD_REQUEST_STATUS_CODE)
+    //   .send({ message: "An Email address and Password are required" });
   }
 
   return User.findUserByCredentials(email, password)
@@ -134,13 +132,12 @@ const userLogin = (req, res) => {
         error.message.includes("Incorrect email") ||
         error.message.includes("Incorrect password")
       ) {
-        return res
-          .status(AUTHORIZATION_ERROR)
-          .send({ message: "The password or email are invalid" });
+        return next(new UnauthorizedError("The password or email are invalid"));
+        // return res
+        //   .status(AUTHORIZATION_ERROR)
+        //   .send({ message: "The password or email are invalid" });
       }
-      return res.status(DEFAULT_ERROR).send({
-        message: "An error has occurred on the server",
-      });
+      return next(error);
     });
 };
 

@@ -2,6 +2,11 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const indexRouter = require("./routes/index");
+const errorHandler = require("./middlewares/errorHandler");
+const { errors } = require("celebrate");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
+
+require("dotenv").config();
 
 const app = express();
 const { PORT = 3001 } = process.env;
@@ -16,7 +21,19 @@ app.use(cors());
 //   next();
 // });
 
+// winston: request logger
+app.use(requestLogger);
+
 app.use("/", indexRouter);
+
+// winston: error handler logger
+app.use(errorLogger);
+
+// celebrate errors handler
+app.use(errors());
+
+// centralized middleware to handle errors
+app.use(errorHandler);
 
 mongoose.set("strictQuery", false);
 
