@@ -10,7 +10,7 @@ const validateURL = (value, helpers) => {
 
 const validateId = celebrate({
   params: Joi.object().keys({
-    itemId: Joi.object().length(24).hex().require().messages({
+    itemId: Joi.object().length(24).required().messages({
       "string.empty": 'The "id" field must be filled in',
       "string.lenght": 'the "id" field must have a lenght of 24',
     }),
@@ -46,7 +46,7 @@ const validateCreatingUser = celebrate({
     email: Joi.string().required().email().messages({
       "string.empty": 'The "email" field must be filled in',
     }),
-    password: Joi.string().required().min(8).messages({
+    password: Joi.string().required().min(7).messages({
       "string.empty": 'The "email" field must be filled in',
     }),
   }),
@@ -71,7 +71,7 @@ const validateAuthenticatingUser = celebrate({
     email: Joi.string().required().email().messages({
       "string.empty": 'The "email" field must be filled in',
     }),
-    password: Joi.string().required().min(8).messages({
+    password: Joi.string().required().min(7).messages({
       "string.empty": 'The "email" field must be filled in',
     }),
   }),
