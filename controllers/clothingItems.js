@@ -91,7 +91,7 @@ const deleteItem = (req, res, next) => {
 
 // Like /items/:itemId - likes an item by _id
 
-const likeItem = (req, res) => {
+const likeItem = (req, res, next) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     {
@@ -121,7 +121,7 @@ const likeItem = (req, res) => {
 
 // dislikes /items/:itemId - dislikes an item by _id
 
-const dislikeItem = (req, res) => {
+const dislikeItem = (req, res, next) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     {
@@ -130,7 +130,7 @@ const dislikeItem = (req, res) => {
     { new: true }
   )
     .orFail(() => {
-      const error = new Error("Item ID not found");
+      const error = new Error("Item ID is not found");
       error.statusCode = NotFoundError;
       throw error;
     })
@@ -140,10 +140,10 @@ const dislikeItem = (req, res) => {
     .catch((error) => {
       console.error(error);
       if (error.statusCode === NotFoundError) {
-        return next(new NotFoundError({ message: error.message }));
+        return next(new NotFoundError("Item ID is not found"));
       }
       if (error.name === "ValidationError" || error.name === "CastError") {
-        return next(new BadRequestError({ message: error.message }));
+        return next(new BadRequestError("Item ID is not found"));
       }
       return next(error);
     });

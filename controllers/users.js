@@ -45,7 +45,11 @@ const createUser = (req, res, next) => {
         // });
       }
       if (error.name === "ValidationError") {
-        return next(new BadRequestError({ message: error.message }));
+        return next(
+          new BadRequestError(
+            "Choose a different email, this email is already existed"
+          )
+        );
       }
       return next(error);
     });
@@ -64,10 +68,10 @@ const getCurrentUser = (req, res, next) => {
     .catch((error) => {
       console.error(error);
       if (error.statusCode === NotFoundError) {
-        return next(new NotFoundError({ message: error.message }));
+        return next(new NotFoundError("User does not exist"));
       }
       if (error.name === "CastError") {
-        return next(new BadRequestError({ message: error.message }));
+        return next(new BadRequestError("User does not exist"));
       }
       return next(error);
     });
@@ -76,11 +80,11 @@ const getCurrentUser = (req, res, next) => {
 // Update user: user/me
 const updateUser = (req, res, next) => {
   const userId = req.user._id;
-  const { name, avatar, email, password } = req.body;
+  const { name, avatar } = req.body;
 
   User.findByIdAndUpdate(
     userId,
-    { name, email, avatar, password },
+    { name, avatar },
     {
       new: true,
       runValidators: true,
@@ -98,7 +102,9 @@ const updateUser = (req, res, next) => {
     })
     .catch((error) => {
       if (error === "ValidationError") {
-        return next(new BadRequestError({ message: error.message }));
+        return next(
+          new BadRequestError("User is not found. Check and try again")
+        );
       }
       if (error.statusCode === NotFoundError) {
         return next(new NotFoundError("User is not found"));

@@ -10,7 +10,7 @@ const validateURL = (value, helpers) => {
 
 const validateId = celebrate({
   params: Joi.object().keys({
-    itemId: Joi.object().length(24).required().messages({
+    itemId: Joi.string().length(24).hex().required().messages({
       "string.empty": 'The "id" field must be filled in',
       "string.lenght": 'the "id" field must have a lenght of 24',
     }),

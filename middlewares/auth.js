@@ -1,12 +1,15 @@
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../utils/config");
-const { AUTHORIZATION_ERROR } = require("../utils/errors");
+// const { AUTHORIZATION_ERROR } = require("../utils/errors");
+
+const UnauthorizedError = require("../errors/UnauthorizedError");
 
 const auth = (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith("Bearer ")) {
-    return res.status(AUTHORIZATION_ERROR).send({ message: "Access denied" });
+    // return res.status(AUTHORIZATION_ERROR).send({ message: "Access denied" });
+    return next(new UnauthorizedError("Access denied"));
   }
   const token = authorization.replace("Bearer ", "");
   try {
@@ -14,9 +17,10 @@ const auth = (req, res, next) => {
     req.user = payload;
     return next();
   } catch (error) {
-    return res
-      .status(AUTHORIZATION_ERROR)
-      .send({ message: "Authorization needed to grant access!" });
+    // return res
+    //   .status(AUTHORIZATION_ERROR)
+    //   .send({ message: "Authorization needed to grant access!" });
+    return next(new UnauthorizedError("Token needed to grant access!"));
   }
 };
 
