@@ -18,6 +18,13 @@ const { PORT = 3001 } = process.env;
 app.use(express.json());
 app.use(cors());
 
+//Crash-test code implementation
+app.get("/crash-test", () => {
+  setTimeout(() => {
+    throw new Error("Server will crash now");
+  }, 0);
+});
+
 // winston: request logger
 app.use(requestLogger);
 
@@ -25,12 +32,6 @@ app.use("/", indexRouter);
 
 // winston: error handler logger
 app.use(errorLogger);
-
-app.get("/crash-test", () => {
-  setTimeout(() => {
-    throw new Error("Server will crash now");
-  }, 0);
-});
 
 // celebrate errors handler
 app.use(errors());
